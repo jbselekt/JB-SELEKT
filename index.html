@@ -1,0 +1,645 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>JB SELEKT - Online Store</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand: orangered;
+    --bg1: #fffaf0;
+    --bg2: #fff5e1;
+    --card: #fff3e6;
+    --accent: #ffe0cc;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    font-family:'Poppins',sans-serif;
+    margin:0;
+    background: linear-gradient(135deg,var(--bg1),var(--bg2));
+    color:#222;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+
+  /* Header */
+  header{
+    background: var(--brand);
+    color:#fff;
+    padding:18px 16px;
+    text-align:center;
+  }
+  header h1{margin:0; font-size:24px; letter-spacing:0.4px}
+  header p{margin:6px 0 0; font-size:13px; opacity:0.95}
+
+  /* Search */
+  .search-wrap{display:flex; justify-content:center; padding:16px;}
+  .search-bar{display:flex; width:100%; max-width:980px; gap:0;}
+  .search-bar input{
+    flex:1;
+    padding:12px 16px;
+    border:2px solid var(--brand);
+    border-right:0;
+    border-radius:28px 0 0 28px;
+    font-size:15px;
+    outline:none;
+  }
+  .search-bar button{
+    background:var(--brand);
+    color:#fff;
+    border:none;
+    padding:12px 18px;
+    border-radius:0 28px 28px 0;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .search-bar button:hover{background:darkred}
+
+  /* No results */
+  #noResults{
+    display:none;
+    text-align:center;
+    color:var(--brand);
+    font-weight:700;
+    margin:8px 0;
+    font-size:15px;
+  }
+  @keyframes popIn { from{opacity:0; transform:translateY(-8px)} to{opacity:1; transform:none} }
+  #noResults.show{ display:block; animation:popIn .45s ease; }
+
+  /* Main area */
+  .main{padding:8px 16px 40px; max-width:1200px; margin:0 auto;}
+
+  /* Accordion */
+  .accordion{
+    background:var(--card);
+    color:var(--brand);
+    cursor:pointer;
+    padding:14px 16px;
+    margin:12px 0;
+    border:2px solid var(--brand);
+    border-radius:12px;
+    font-size:16px;
+    font-weight:700;
+    width:100%;
+    text-align:left;
+    transition:background .25s, transform .15s;
+  }
+  .accordion:hover{ background:var(--accent); transform:translateY(-2px) }
+
+  .panel{
+    display:none;
+    background:#fff;
+    border-left:2px solid var(--brand);
+    border-right:2px solid var(--brand);
+    border-bottom:2px solid var(--brand);
+    border-radius:0 0 12px 12px;
+    padding:14px;
+    margin-bottom:12px;
+  }
+
+  /* grid layouts */
+  .subcategory-grid{
+    display:grid;
+    gap:12px;
+    grid-template-columns: repeat(auto-fit,minmax(120px,1fr));
+  }
+  .subcategory{
+    display:block;
+    background:#fff;
+    border-radius:10px;
+    padding:10px;
+    text-align:center;
+    border:1px solid #ffdcc7;
+    text-decoration:none;
+    color:inherit;
+    transition:transform .18s ease, box-shadow .18s;
+  }
+  .subcategory img{width:56px;height:56px;object-fit:contain;margin-bottom:8px}
+  .subcategory p{margin:0;font-size:13px;font-weight:600;color:#333}
+
+  .subcategory:hover{transform:translateY(-6px); box-shadow:0 10px 20px rgba(0,0,0,0.07)}
+
+  .products-grid{
+    display:grid;
+    gap:12px;
+    grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
+    margin-top:12px;
+  }
+  .product{
+    background:var(--card);
+    border-radius:10px;
+    padding:10px;
+    text-align:left;
+    border:1px solid #ffd8b3;
+    transition:transform .18s ease, box-shadow .18s;
+    overflow:hidden;
+  }
+  .product a{ color:inherit; text-decoration:none; display:block; }
+  .product img{width:100%; height:110px; object-fit:cover; border-radius:6px; display:block}
+  .product .pname{ margin:8px 0 4px; font-weight:600; font-size:14px; color:#222; min-height:34px }
+  .product .price{ color:var(--brand); font-weight:700; font-size:14px }
+  .product:hover{ transform:translateY(-6px); box-shadow:0 12px 30px rgba(0,0,0,0.08) }
+
+  /* Footer */
+  footer{
+    background:var(--brand);
+    color:#fff;
+    padding:18px 10px;
+    text-align:center;
+    margin-top:18px;
+  }
+  footer a{ color: #fff7a8; text-decoration:none; font-weight:700 }
+
+  /* responsive tweaks */
+  @media (max-width:700px){
+    .search-bar input{font-size:14px}
+    .product img{height:100px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>JB SELEKT</h1>
+  <p>Quality products • Fast delivery • Friendly support</p>
+</header>
+
+<!-- Search -->
+<div class="search-wrap">
+  <div class="search-bar" role="search">
+    <input id="searchInput" type="search" placeholder="Search products, categories or keywords..." aria-label="Search products" />
+    <button id="searchBtn" aria-label="Search">🔍 Search</button>
+  </div>
+</div>
+<div id="noResults">No results found 😔 — try different keywords</div>
+
+<main class="main">
+
+  <!-- CATEGORY: Women's Clothing -->
+  <button class="accordion">👗 Women's Clothing</button>
+  <div class="panel">
+    <div class="subcategory-grid" aria-hidden="false">
+      <a href="#" class="subcategory" data-name="Women's Coats & Jackets"><img src="https://img.icons8.com/color/96/jacket.png" alt=""><p>Coats & Jackets</p></a>
+      <a href="#" class="subcategory" data-name="Women's T-Shirts"><img src="https://img.icons8.com/color/96/t-shirt.png" alt=""><p>T-Shirts</p></a>
+      <a href="#" class="subcategory" data-name="Women's Sweaters"><img src="https://img.icons8.com/color/96/sweater.png" alt=""><p>Sweaters</p></a>
+      <a href="#" class="subcategory" data-name="Women's Dresses"><img src="https://img.icons8.com/color/96/dress.png" alt=""><p>Dresses</p></a>
+      <a href="#" class="subcategory" data-name="Women's Jewelry"><img src="https://img.icons8.com/color/96/jewelry.png" alt=""><p>Jewelry</p></a>
+      <a href="#" class="subcategory" data-name="Women's Active Wear"><img src="https://img.icons8.com/color/96/active-wear.png" alt=""><p>Active Wear</p></a>
+    </div>
+
+    <div class="products-grid">
+      <div class="product" data-name="Elegant Winter Coat">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Winter+Coat" alt="Elegant Winter Coat">
+          <div class="pname">Elegant Winter Coat</div>
+          <div class="price">R450</div>
+        </a>
+      </div>
+
+      <div class="product" data-name="Casual Cotton T-Shirt">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Cotton+T-Shirt" alt="Casual Cotton T-Shirt">
+          <div class="pname">Casual Cotton T-Shirt</div>
+          <div class="price">R150</div>
+        </a>
+      </div>
+
+      <div class="product" data-name="Cozy Wool Sweater">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Wool+Sweater" alt="Cozy Wool Sweater">
+          <div class="pname">Cozy Wool Sweater</div>
+          <div class="price">R300</div>
+        </a>
+      </div>
+
+      <div class="product" data-name="Summer Floral Dress">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Floral+Dress" alt="Summer Floral Dress">
+          <div class="pname">Summer Floral Dress</div>
+          <div class="price">R380</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORY: Men's Clothing -->
+  <button class="accordion">👔 Men's Clothing</button>
+  <div class="panel">
+    <div class="subcategory-grid">
+      <a href="#" class="subcategory" data-name="Men's Jackets & Coats"><img src="https://img.icons8.com/color/96/jacket.png" alt=""><p>Jackets & Coats</p></a>
+      <a href="#" class="subcategory" data-name="Men's T-Shirts"><img src="https://img.icons8.com/color/96/t-shirt.png" alt=""><p>T-Shirts</p></a>
+      <a href="#" class="subcategory" data-name="Men's Pants"><img src="https://img.icons8.com/color/96/trousers.png" alt=""><p>Pants</p></a>
+      <a href="#" class="subcategory" data-name="Men's Casual Shoes"><img src="https://img.icons8.com/color/96/shoes.png" alt=""><p>Casual Shoes</p></a>
+    </div>
+
+    <div class="products-grid">
+      <div class="product" data-name="Men's Leather Jacket">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Leather+Jacket" alt="Men's Leather Jacket">
+          <div class="pname">Men's Leather Jacket</div>
+          <div class="price">R700</div>
+        </a>
+      </div>
+
+      <div class="product" data-name="Slim Fit Chino Pants">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Chino+Pants" alt="Slim Fit Chino Pants">
+          <div class="pname">Slim Fit Chino Pants</div>
+          <div class="price">R320</div>
+        </a>
+      </div>
+
+      <div class="product" data-name="Classic White T-Shirt">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=White+T-Shirt" alt="Classic White T-Shirt">
+          <div class="pname">Classic White T-Shirt</div>
+          <div class="price">R120</div>
+        </a>
+      </div>
+
+      <div class="product" data-name="Men's Running Sneakers">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Running+Sneakers" alt="Men's Running Sneakers">
+          <div class="pname">Men's Running Sneakers</div>
+          <div class="price">R420</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORY: Electronics -->
+  <button class="accordion">📱 Electronics & Accessories</button>
+  <div class="panel">
+    <div class="subcategory-grid">
+      <a href="#" class="subcategory" data-name="Cellphones"><img src="https://img.icons8.com/color/96/phone.png" alt=""><p>Cellphones</p></a>
+      <a href="#" class="subcategory" data-name="Cases Holsters & Sleeves"><img src="https://img.icons8.com/color/96/case.png" alt=""><p>Cases & Sleeves</p></a>
+      <a href="#" class="subcategory" data-name="Tablets"><img src="https://img.icons8.com/color/96/tablet.png" alt=""><p>Tablets</p></a>
+      <a href="#" class="subcategory" data-name="Headphones & Earbuds"><img src="https://img.icons8.com/color/96/headphones.png" alt=""><p>Headphones</p></a>
+    </div>
+
+    <div class="products-grid">
+      <div class="product" data-name="Smartphone X200">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Smartphone+X200" alt="Smartphone X200">
+          <div class="pname">Smartphone X200</div>
+          <div class="price">R3,200</div>
+        </a>
+      </div>
+
+      <div class="product" data-name="Protective Phone Case">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Phone+Case" alt="Protective Phone Case">
+          <div class="pname">Protective Phone Case</div>
+          <div class="price">R80</div>
+        </a>
+      </div>
+
+      <div class="product" data-name="Studio Headphones">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Studio+Headphones" alt="Studio Headphones">
+          <div class="pname">Studio Headphones</div>
+          <div class="price">R520</div>
+        </a>
+      </div>
+
+      <div class="product" data-name="10-inch Tablet Pro">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Tablet+Pro" alt="10-inch Tablet Pro">
+          <div class="pname">10-inch Tablet Pro</div>
+          <div class="price">R2,400</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORY: Home & Kitchen -->
+  <button class="accordion">🏡 Home, Living & Kitchen</button>
+  <div class="panel">
+    <div class="subcategory-grid">
+      <a href="#" class="subcategory" data-name="Home Decor Products"><img src="https://img.icons8.com/color/96/decor.png" alt=""><p>Home Decor</p></a>
+      <a href="#" class="subcategory" data-name="Bedding"><img src="https://img.icons8.com/color/96/bedding.png" alt=""><p>Bedding</p></a>
+      <a href="#" class="subcategory" data-name="Kitchen Storage & Organization"><img src="https://img.icons8.com/color/96/kitchen.png" alt=""><p>Kitchen Storage</p></a>
+      <a href="#" class="subcategory" data-name="Kitchen Utensils & Supplies"><img src="https://img.icons8.com/color/96/utensils.png" alt=""><p>Utensils</p></a>
+    </div>
+
+    <div class="products-grid">
+      <div class="product" data-name="Luxury Duvet Set">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Duvet+Set" alt="Luxury Duvet Set">
+          <div class="pname">Luxury Duvet Set</div>
+          <div class="price">R650</div>
+        </a>
+      </div>
+
+      <div class="product" data-name="Space Saver Kitchen Rack">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Kitchen+Rack" alt="Space Saver Kitchen Rack">
+          <div class="pname">Space Saver Kitchen Rack</div>
+          <div class="price">R180</div>
+        </a>
+      </div>
+
+      <div class="product" data-name="Non-stick Frying Pan">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Frying+Pan" alt="Non-stick Frying Pan">
+          <div class="pname">Non-stick Frying Pan</div>
+          <div class="price">R220</div>
+        </a>
+      </div>
+
+      <div class="product" data-name="Decorative Cushion Set">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Cushion+Set" alt="Decorative Cushion Set">
+          <div class="pname">Decorative Cushion Set</div>
+          <div class="price">R140</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORY: Beauty & Health -->
+  <button class="accordion">💄 Beauty & Health</button>
+  <div class="panel">
+    <div class="subcategory-grid">
+      <a href="#" class="subcategory" data-name="Makeup"><img src="https://img.icons8.com/color/96/lipstick.png" alt=""><p>Makeup</p></a>
+      <a href="#" class="subcategory" data-name="Skincare"><img src="https://img.icons8.com/color/96/face-mask.png" alt=""><p>Skincare</p></a>
+      <a href="#" class="subcategory" data-name="Haircare"><img src="https://img.icons8.com/color/96/hair-comb.png" alt=""><p>Haircare</p></a>
+    </div>
+
+    <div class="products-grid">
+      <div class="product" data-name="Hydrating Face Serum">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Face+Serum" alt="Hydrating Face Serum">
+          <div class="pname">Hydrating Face Serum</div>
+          <div class="price">R180</div>
+        </a>
+      </div>
+
+      <div class="product" data-name="Volume Hair Shampoo">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Hair+Shampoo" alt="Volume Hair Shampoo">
+          <div class="pname">Volume Hair Shampoo</div>
+          <div class="price">R95</div>
+        </a>
+      </div>
+
+      <div class="product" data-name="Long-wear Lipstick">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Lipstick" alt="Long-wear Lipstick">
+          <div class="pname">Long-wear Lipstick</div>
+          <div class="price">R75</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORY: Sports & Outdoors -->
+  <button class="accordion">🏀 Sports & Outdoors</button>
+  <div class="panel">
+    <div class="subcategory-grid">
+      <a href="#" class="subcategory" data-name="Fishing"><img src="https://img.icons8.com/color/96/fishing.png" alt=""><p>Fishing</p></a>
+      <a href="#" class="subcategory" data-name="Camping Gear"><img src="https://img.icons8.com/color/96/tent.png" alt=""><p>Camping Gear</p></a>
+      <a href="#" class="subcategory" data-name="Fitness Equipment"><img src="https://img.icons8.com/color/96/dumbbell.png" alt=""><p>Fitness</p></a>
+    </div>
+
+    <div class="products-grid">
+      <div class="product" data-name="Premium Fishing Rod">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Fishing+Rod" alt="Premium Fishing Rod">
+          <div class="pname">Premium Fishing Rod</div>
+          <div class="price">R290</div>
+        </a>
+      </div>
+
+      <div class="product" data-name="Portable Camping Stove">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Camping+Stove" alt="Portable Camping Stove">
+          <div class="pname">Portable Camping Stove</div>
+          <div class="price">R220</div>
+        </a>
+      </div>
+
+      <div class="product" data-name="Yoga Mat Pro">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Yoga+Mat" alt="Yoga Mat Pro">
+          <div class="pname">Yoga Mat Pro</div>
+          <div class="price">R140</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORY: Kids & Babies -->
+  <button class="accordion">🧸 Kids & Babies</button>
+  <div class="panel">
+    <div class="subcategory-grid">
+      <a href="#" class="subcategory" data-name="Girl's Sets"><img src="https://img.icons8.com/color/96/girl.png" alt=""><p>Girl's Sets</p></a>
+      <a href="#" class="subcategory" data-name="Boy's Clothing"><img src="https://img.icons8.com/color/96/baby.png" alt=""><p>Boy's Clothing</p></a>
+      <a href="#" class="subcategory" data-name="Baby Essentials"><img src="https://img.icons8.com/color/96/baby-bottle.png" alt=""><p>Baby Essentials</p></a>
+    </div>
+
+    <div class="products-grid">
+      <div class="product" data-name="Cute Girl's Two Piece Set">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Girl+Set" alt="Girl's Two Piece">
+          <div class="pname">Cute Girl's Two Piece Set</div>
+          <div class="price">R160</div>
+        </a>
+      </div>
+
+      <div class="product" data-name="Baby Sleep Blanket">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Baby+Blanket" alt="Baby Blanket">
+          <div class="pname">Baby Sleep Blanket</div>
+          <div class="price">R120</div>
+        </a>
+      </div>
+
+      <div class="product" data-name="Kids Sport Shoes">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Kids+Shoes" alt="Kids Sport Shoes">
+          <div class="pname">Kids Sport Shoes</div>
+          <div class="price">R180</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORY: Accessories & Bags -->
+  <button class="accordion">👜 Bags, Jewelry & Accessories</button>
+  <div class="panel">
+    <div class="subcategory-grid">
+      <a href="#" class="subcategory" data-name="Bags & Luggage"><img src="https://img.icons8.com/color/96/bag.png" alt=""><p>Bags & Luggage</p></a>
+      <a href="#" class="subcategory" data-name="Women's Jewelry"><img src="https://img.icons8.com/color/96/jewelry.png" alt=""><p>Jewelry</p></a>
+      <a href="#" class="subcategory" data-name="Phone Cases"><img src="https://img.icons8.com/color/96/phone-accessory.png" alt=""><p>Phone Cases</p></a>
+    </div>
+
+    <div class="products-grid">
+      <div class="product" data-name="Classic Tote Bag">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Tote+Bag" alt="Classic Tote Bag">
+          <div class="pname">Classic Tote Bag</div>
+          <div class="price">R220</div>
+        </a>
+      </div>
+
+      <div class="product" data-name="Sterling Silver Necklace">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Necklace" alt="Sterling Necklace">
+          <div class="pname">Sterling Silver Necklace</div>
+          <div class="price">R260</div>
+        </a>
+      </div>
+
+      <div class="product" data-name="Silicone Phone Case">
+        <a href="#">
+          <img src="https://via.placeholder.com/400x300?text=Phone+Case" alt="Silicone Phone Case">
+          <div class="pname">Silicone Phone Case</div>
+          <div class="price">R65</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p>📞 WhatsApp: <a href="https://wa.me/27619349303">+27 61 934 9303</a> &nbsp; • &nbsp; 📧 <a href="mailto:info@jbselekt.com">info@jbselekt.com</a></p>
+  <p style="margin-top:8px; font-size:13px; opacity:0.95">&copy; <span id="year"></span> JB SELEKT — All Rights Reserved</p>
+</footer>
+
+<script>
+  // set year
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Accordion toggle
+  const acc = document.getElementsByClassName("accordion");
+  for (let i=0;i<acc.length;i++){
+    acc[i].addEventListener("click", function(){
+      this.classList.toggle("active");
+      let panel = this.nextElementSibling;
+      // close other panels (optional): comment out to allow multiple open
+      // closeAllExcept(panel);
+      panel.style.display = panel.style.display === "block" ? "none" : "block";
+    });
+  }
+
+  function closeAllExcept(exceptionPanel){
+    const panels = document.querySelectorAll('.panel');
+    panels.forEach(p=>{
+      if(p!==exceptionPanel) p.style.display = 'none';
+    });
+  }
+
+  // Utility: safely highlight plain text (works for product name elements)
+  function highlightText(str, query){
+    if(!query) return str;
+    const re = new RegExp('('+escapeRegExp(query)+')', 'gi');
+    return str.replace(re, "<b style='color:var(--brand)'>$1</b>");
+  }
+  function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  // SEARCH: filters subcategories and products; auto-open panels; highlight matches; auto-scroll; no-results
+  function searchCategories(){
+    const input = document.getElementById('searchInput').value.trim().toLowerCase();
+    const panels = document.querySelectorAll('.panel');
+    let foundSomething = false;
+    let firstMatchElement = null;
+
+    panels.forEach(panel=>{
+      let panelHasMatch = false;
+
+      // Subcategories
+      const subs = panel.querySelectorAll('.subcategory');
+      subs.forEach(s=>{
+        const name = s.getAttribute('data-name') || s.textContent;
+        if(input === "" || name.toLowerCase().includes(input)){
+          s.style.display = 'block';
+          // highlight subcategory name inside <p>
+          const p = s.querySelector('p');
+          p.innerHTML = highlightText(name, input);
+          if(input!=="" && name.toLowerCase().includes(input)){ panelHasMatch = true; }
+        } else {
+          s.style.display = 'none';
+        }
+      });
+
+      // Products
+      const prods = panel.querySelectorAll('.product');
+      prods.forEach(prod=>{
+        const pname = prod.getAttribute('data-name') || prod.querySelector('.pname').textContent;
+        const pnameElem = prod.querySelector('.pname');
+        if(input === "" || pname.toLowerCase().includes(input)){
+          prod.style.display = 'block';
+          // highlight product name safely
+          pnameElem.innerHTML = highlightText(pname, input);
+          if(input!=="" && pname.toLowerCase().includes(input)){ panelHasMatch = true; }
+          if(!firstMatchElement && input!=="") firstMatchElement = prod;
+        } else {
+          prod.style.display = 'none';
+        }
+      });
+
+      // Show or hide panel based on matches
+      if(panelHasMatch){
+        panel.style.display = 'block';
+        // set found flag if any visible child exists
+        foundSomething = true;
+        if(!firstMatchElement){
+          // try to pick first visible subcategory if exists
+          const firstVisibleSub = panel.querySelector('.subcategory[style*="display: block"]');
+          if(firstVisibleSub) firstMatchElement = firstVisibleSub;
+        }
+      } else {
+        // if input empty, keep panels closed by default
+        panel.style.display = input === "" ? 'none' : 'none';
+      }
+    });
+
+    // auto-scroll to first match
+    if(firstMatchElement){
+      firstMatchElement.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+
+    // show/hide no results
+    const noResults = document.getElementById('noResults');
+    if(input === "" || foundSomething){
+      noResults.classList.remove('show');
+    } else {
+      noResults.classList.add('show');
+    }
+  }
+
+  // Bind search events
+  document.getElementById('searchBtn').addEventListener('click', searchCategories);
+  document.getElementById('searchInput').addEventListener('keyup', function(e){
+    // optional: Enter key triggers search explicitly
+    if(e.key === 'Enter') searchCategories();
+    else searchCategories();
+  });
+
+  // Make subcategory links clickable (example navigation)
+  document.querySelectorAll('.subcategory').forEach(s=>{
+    s.addEventListener('click', function(e){
+      e.preventDefault();
+      // example: open link, or filter to products of that subcategory
+      // For now, we will scroll to products within the same panel
+      const panel = s.closest('.panel');
+      // expand panel (already open when clicked normally)
+      panel.style.display = 'block';
+      // optional: scroll to products
+      const firstProduct = panel.querySelector('.product');
+      if(firstProduct) firstProduct.scrollIntoView({behavior:'smooth', block:'center'});
+    });
+  });
+
+</script>
+</body>
+</html>
